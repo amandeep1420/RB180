@@ -1,0 +1,44 @@
+1. declarative
+   yes, but they're looking for 'special purpose language' - it's used for one 
+   specific purpose (interacting with RDBs).
+   
+2. DDL, DML, DCL
+
+3.
+'canoe'
+'a long road'
+'weren''t'
+'"No way!"'
+
+4. +
+   wrong - it's double pipes? ||? that's so weird - so 'meow' || ' mix', huh..
+   
+5.
+   lower(string) - so lower('meow')
+   
+6. t or f for true or false - there are a few different ways you can write them, though
+
+7. SELECT round( 4 * pi() * sqrt(26.3));
+   exponent, not square root....
+   SELECT trunc(4 * pi() * 26.3^2);
+   
+   note: trunc simply cuts off decimals, while round...rounds
+   
+INSERT INTO people(name, age, occupation)
+VALUES ('Abby', 34, 'biologist'),
+('Mu''nisah', 26, NULL),
+('Mirabelle', 40, 'contractor');
+
+CREATE TABLE birds (
+name varchar(30),
+length decimal(3,1),
+wingspan decimal(3,1),
+family varchar(30),
+extinct boolean DEFAULT false);
+
+Did you know you can add an optional argument to round to specify how many 
+decimal places are retained? e.g round(32.1234, 2) = 32.12
+
+SELECT item, menu_price, ingredient_cost, prep_time / 60 * 13 AS labor, menu_price - prep_time / 60 * 13 AS profit
+FROM menu_items
+ORDER BY profit DESC;
