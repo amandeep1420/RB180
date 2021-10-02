@@ -1,0 +1,8 @@
+INSERT INTO menu_items
+VALUES ('omelette', 10, 1.50, 182, 7.99),
+('tacos', 5, 2.00, 254, 8.99),
+('oatmeal', 1, 0.50, 79, 5.99);
+
+SELECT item, menu_price, ingredient_cost, round(prep_time * 1.00 / 60 * 13, 2) AS labor, round(menu_price - ingredient_cost - (prep_time * 1.0 / 60 * 13), 2) AS profit
+FROM menu_items
+ORDER BY profit DESC;

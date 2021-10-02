@@ -1,0 +1,71 @@
+ALTER TABLE birds
+ADD CONSTRAINT check_age CHECK (age > 0);
+
+UPDATE films SET director = 'Francis Ford Coppola', duration = 113
+WHERE title = 'The Conversation';
+
+INSERT INTO films
+VALUES ('1984', 1956, 'scifi', 'Michael Anderson', 90),
+('Tinker Tailor Soldier Spy', 2011, 'espionage', 'Tomas Alfredson', 127),
+('The Birdcase', 1996, 'comedy', 'Mike Nichols', 118);
+
+SELECT title, extract(year from current_date) - year AS age
+FROM films
+ORDER BY age ASC;
+
+SELECT title, duration
+FROM films
+WHERE duration > 120
+ORDER BY duration DESC;
+
+SELECT title FROM films
+ORDER BY duration DESC
+LIMIT 1;
+
+SELECT state, count(state) FROM people
+GROUP BY state
+ORDER BY count(state) DESC
+LIMIT 10;
+
+SELECT substr(email, strpos(email, '@')) AS domain, count(id)
+FROM people
+GROUP BY domain
+ORDER BY count(id) DESC;
+
+DELETE FROM people WHERE state = 'CA';
+
+UPDATE people SET given_name = upper(given_name)
+WHERE position('teleworm.us' in email) <> 0;
+ 
+UPDATE people SET given_name = upper(given_name)
+WHERE email LIKE '%teleworm.us';
+
+
+CREATE TABLE temperatures (
+date date NOT NULL,
+low integer NOT NULL,
+high integer NOT NULL);
+
+
+INSERT INTO temperatures
+VALUES ('2016-03-01', 34, 43),
+('2016-03-02', 32, 44),
+('2016-03-03', 31, 47),
+('2016-03-04', 33, 42),
+('2016-03-05', 39, 46),
+('2016-03-06', 32, 43),
+('2016-03-07', 29, 32),
+('2016-03-08', 23, 31),
+('2016-03-09', 17, 28);
+
+
+SELECT date, round((high + low) / 2.0, 1) AS average
+FROM temperatures
+WHERE date_part('day', date) BETWEEN '2' AND '8';
+
+ALTER TABLE temperatures
+ADD COLUMN rainfall integer DEFAULT 0;
+
+UPDATE temperatures
+SET rainfall = ((high + low) / 2.0) - 35
+WHERE ((high + low) / 2) > 35;
