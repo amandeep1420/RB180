@@ -69,3 +69,80 @@ ADD COLUMN rainfall integer DEFAULT 0;
 UPDATE temperatures
 SET rainfall = ((high + low) / 2.0) - 35
 WHERE ((high + low) / 2) > 35;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ALTER TABLE films
+ADD CONSTRAINT director_value
+CHECK (length(director) >= 3 AND strpos(director, ' ') <> 0);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+INSERT INTO films (title, year, genre, director, duration)
+VALUES ('Wayne''s World', 1992, 'comedy', 'Penelope Spheeris', 95),
+('Bourne Identity', 2002, 'espionage', 'Doug Liman', 118);
+
+
+SELECT genre, round(avg(duration)) AS average_duration FROM films
+GROUP BY genre;
+
+
+SELECT year / 10 * 10 AS decade, round(avg(duration)) AS average_duration
+FROM films
+GROUP BY decade
+ORDER BY decade ASC;
+
+SELECT * FROM films
+WHERE position('John' in director) <> 0;
+
+
+SELECT genre, count(id) AS count
+FROM films
+GROUP BY genre
+ORDER BY count DESC;
+
+
+
+SELECT round(year, -1) AS decade, genre, string_agg(title, ', ') AS films
+FROM films
+GROUP BY decade, genre
+ORDER BY decade, genre;
+
+
+
+SELECT genre, sum(duration) AS total_duration FROM films
+GROUP BY genre
+ORDER BY genre, total_duration ASC;
+
