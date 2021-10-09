@@ -209,3 +209,279 @@ INNER JOIN seats AS sea
 ON t.seat_id = sea.id
 INNER JOIN sections AS sec
 ON sea.section_id = sec.id;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ALTER TABLE orders
+ADD CONSTRAINT orders_product_id_fkey
+FOREIGN KEY (product_id) references products(id);
+
+
+
+INSERT INTO orders (product_id, quantity)
+VALUES (1, 10),
+(1, 25),
+(2, 15);
+
+
+SELECT quantity, name
+FROM orders
+INNER JOIN products
+ON products.id = orders.product_id;
+
+ALTER TABLE orders
+ALTER COLUMN product_id SET NOT NULL;
+
+CREATE TABLE reviews(
+id serial PRIMARY KEY,
+product text REFERENCES products(name),
+review text);
+
+
+
+
+
+SELECT "when", duration, first_name
+FROM calls
+INNER JOIN contacts
+ON contacts.id = calls.contact_id
+WHERE
+(first_name || ' ' || last_name) <> 'William Swift';
+
+
+INSERT INTO contacts (first_name, last_name, number)
+VALUES ('Merve', 'Elk', 6343511126),
+('Sawa', 'Fyodorov', 6125594874);
+
+
+ALTER TABLE contacts
+ADD CONSTRAINT unique_number CHECK(number IS UNIQUE);
+
+
+
+
+
+
+INSERT INTO directors (name)
+VALUES ('John McTiernan'),
+('Michael Curtiz'),
+('Fancis Ford Coppola'),
+('Michael Anderson'),
+('Tomas Alfredson'),
+('Mike Nichols');
+
+
+ALTER TABLE films
+ADD COLUMN director_id integer REFERENCES directors(id);
+
+
+UPDATE films SET director_id = 6 WHERE director = 'Mike Nichols';
+
+
+ALTER TABLE films
+ALTER COLUMN director_id SET NOT NULL;
+
+ALTER TABLE directors
+ADD CONSTRAINT valid_name
+CHECK(length(name) >= 1 AND position(' ' in name) <> 0);
+
+
+CREATE TABLE stars(
+id serial PRIMARY KEY,
+name varchar(25) UNIQUE NOT NULL,
+distance integer NOT NULL CHECK(distance > 0),
+spectral_type char(1),
+companions integer NOT NULL CHECK(companions >= 0));
+
+CREATE TABLE planets(
+id serial PRIMARY KEY,
+designation char(1) UNIQUE,
+mass integer);
+
+
+ALTER TABLE planets
+ADD COLUMN star_id integer NOT NULL REFERENCES stars(id);
+
+ALTER TABLE stars
+ALTER COLUMN name TYPE varchar(50);
+
+ALTER TABLE stars
+ALTER COLUMN distance TYPE float;
+
+ALTER TABLE stars
+ALTER COLUMN spectral_type SET NOT NULL;
+
+ALTER TABLE stars
+ADD CONSTRAINT spectral_type_check
+CHECK(position(spectral_type in 'OBAFGKM') <> 0);
+
+ALTER TABLE planets
+ALTER COLUMN mass TYPE numeric,
+ALTER COLUMN mass SET NOT NULL,
+ALTER COLUMN designation SET NOT NULL;
+
+ALTER TABLE planets
+ADD COLUMN semi_major_axis numeric NOT NULL;
+
+CREATE TABLE moons(
+id serial PRIMARY KEY,
+designation integer NOT NULL CHECK(designation > 0),
+semi_major_axis CHECK(semi_major_axis > 0),
+mass numeric CHECK(mass > 0)
+planet_id integer NOT NULL REFERENCES planets(id)
+);
+
+
+
+
+
+
+
+
+
+
+
+
+CREATE TABLE devices(
+id serial PRIMARY KEY,
+name text NOT NULL,
+created_at timestamp DEFAULT current_timestamp
+);
+
+CREATE TABLE parts(
+id serial PRIMARY KEY,
+part_number integer UNIQUE NOT NULL,
+device_id integer REFERENCES devices(id)
+);
+
+
+INSERT INTO devices (name)
+VALUES ('Accelerometer'),
+('Gyroscope');
+
+INSERT INTO parts(part_number, device_id)
+VALUES (10, 1),
+(11, 1),
+(12, 1),
+(20, 2),
+(21, 2),
+(23, 2),
+(24, 2),
+(25, 2);
+
+
+SELECT name, part_number
+FROM devices
+INNER JOIN parts
+ON devices.id = parts.device_id;
+
+SELECT * FROM parts
+WHERE part_number::text LIKE '3%';
+
+
+SELECT devices.name AS name, COUNT(parts.device_id)
+FROM devices
+JOIN parts ON devices.id = parts.device_id
+GROUP BY devices.name
+ORDER BY devices.name DESC;
+
+
+
+SELECT part_number, device_id
+FROM parts
+WHERE device_id IS NOT NULL;
+
+(or IS NULL)
+
+SELECT name
+FROM devices
+ORDER BY created_at ASC
+LIMIT 1;
+
+UPDATE parts SET device_id = 1
+WHERE device_id = 2
+AND id = 7 OR id = 8;
+
+
+UPDATE parts SET device_id = 2
+WHERE part_number = min(part_number);
+
+DELETE FROM parts, devices
+WHERE name = 'Accelerometer'
+OR
+device_id = (SELECT device_id FROM devices WHERE name = 'Accelerometer');
+
+
+ALTER TABLE books_categories
+ADD CONSTRAINT books_categories_book_id_fkey FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE,
+ADD CONSTRAINT books_categories_category_id_fkey FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE;
+
+ALTER TABLE books_categories
+ALTER COLUMN book_id SET NOT NULL,
+ALTER COLUMN category_id SET NOT NULL;
+
+SELECT books.id, books.author, string_agg(categories.name, ', ')
+FROM books
+INNER JOIN books_categories
+ON books.id = books_categories.book_id
+INNER JOIN categories
+ON categories.id = books_categories.category_id
+GROUP BY books.id;
+
+INSERT INTO books (title, author)
+VALUES('Sally Ride: America''s First Woman in Space', 'Lynn Sherr'),
+('Jane Eyre', 'Charlotte Bronte'),
+('Vij''s: Elegant and Inspired Indian Cuisine', 'Meeru Dhalwala and Vikran Vij');
+
+ALTER TABLE BOOKS
+ALTER COLUMN title TYPE text,
+ALTER COLUMN author TYPE text;
+
+INSERT INTO categories (name)
+VALUES ('Space Exploration'),
+('Cookbook'),
+('South Asia');
+
+4 => 5, 1, 7
+5 => 2, 4
+6 => 8, 1, 9
+
+INSERT INTO books_categories
+VALUES (4, 5),
+(4, 1),
+(4, 7),
+(5, 2),
+(5, 4),
+(6, 8),
+(6, 1),
+(6, 9);
+
+ALTER TABLE books_categories
+ADD UNIQUE (book_id, category_id);
+
+SELECT categories.name, count(books.id) AS book_count, string_agg(books.title, ', ') AS book_titles
+FROM categories
+INNER JOIN books_categories
+ON categories.id = books_categories.category_id
+INNER JOIN books
+ON books.id = books_categories.book_id
+GROUP BY categories.name
+ORDER BY categories.name ASC;
